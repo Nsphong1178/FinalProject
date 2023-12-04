@@ -12,7 +12,7 @@
         android:text="GoQuiz"
         android:textSize="40dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -30,30 +30,54 @@
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
-            android:layout_width="350dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
 
 
             <TextView
                 android:id="@+id/text1"
                 android:layout_width="wrap_content"
-
+                android:textSize="18dp"
+                android:textStyle="bold"
                 android:layout_height="wrap_content"
                 android:text="Chào mừng bạn đến với trò chơi GoQuiz." />
 
             <TextView
                 android:id="@+id/text2"
-
+                android:textSize="18dp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Trong trò chơi này, bạn trả lời các câu hỏi theo các chủ đề:Lịch sử, Địa lý, Khoa học, Nghệ thuật,..." />
 
             <TextView
                 android:id="@+id/text3"
+                android:textSize="18dp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thành tích của các bạn giữa các lần chơi sẽ được lưu lại." />
+                android:text="Khi mở ứng dụng, người dùng sẽ được đưa tới màn hình số 1.
+
+Màn hình số 1: Đây là màn hình chào mừng, màn hình này hiển thị giới thiệu ứng dụng và trò chơi (chú ý: Hãy làm cho phần giới thiệu này đài để có thể cuộn (scroll) được. Màn hình này có một nút Start, khi nhấn nút này, người dùng sẽ được chuyển sang màn hình số 2
+
+- Màn hình số 2: Màn hình này hiển thị các chủ đề để người dùng chơi. Các chủ đề bao gồm: Địa lý, Lịch sử, Khoa học, Nghệ thuật,... (Có thể thêm
+
+các chủ đề khác nếu muốn). Sử dụng ListView hoặc RecycleView cho phần này. Mỗi phần lựa chọn chủ đề bao gồm một hình ảnh minh họa, tên chủ đề và mô tả cho cho chủ đề đó. Phía trên có mục Total Score hiển thị tổng điểm đạt điểm đạt được sau các làn chơi của người chơi. Phía dưới màn hình có một thanh gạt để lựa chọn cấp độ chơi: Đề Khó. Nếu người chơi chọn cấp độ khó, với mỗi câu trả lời đúng, người chơi sẽ được 2 điểm còn với cấp độ để thì chỉ được 1 điểm. Dưới cùng là một nút truy cập vào danh sách tất cả các câu hỏi, khi nhân nút này, người dùng được đưa đến màn
+
+hình số 5.
+
+Màn hình số 3: Màn hình chơi, ở màn hình này sẽ hiển thị câu hỏi và 4 đáp án trả lời dưới dạng Radio Button và một nút Trả lời. Khi người dùng nhân nút Trả lời, nêu người dùng trả lời đúng, câu hỏi khác sẽ được hiện ra. Nếu người dùng trả lời sai hoặc hết cầu hỏi, người dùng sẽ được đưa
+
+đến màn hình số 4. - Màn hình số 4: Màn hình hiển thị số điểm của người chơi trong làn chơi đó, một nút Hoàn thành sẽ đưa người chơi về màn hình số 1. Nút Chơi lại
+
+sẽ cho người dùng chơi lại ở cùng cấp độ và lĩnh vực. Nút Chia sẻ thành tích cho phép người dùng chia sẽ số điểm trong làn chơi đó qua các ứng dụng khác (tin nhân).
+
+- Màn hình số 5: Hiển thị danh sách tất cả các câu hỏi và một menu để lọc các câu hỏi theo từng chủ đề. Khi chọn bất kỳ một câu hỏi nào, người dùng sẽ được đưa tới màn hình số 56.
+
+- Màn hình số 6: Màn hình hiển thị câu hỏi, các câu trả lời, đáp án đúng và độ khó" />
 
         </LinearLayout>
     </ScrollView>
@@ -66,5 +90,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

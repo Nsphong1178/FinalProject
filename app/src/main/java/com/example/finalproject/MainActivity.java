@@ -8,6 +8,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.frame1);
+        setContentView(R.layout.frame3);
     }
 }
