@@ -55,12 +55,13 @@
 
     <Switch
         android:id="@+id/switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
         android:text="Cấp độ khó"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintTop_toBottomOf="@+id/list_qs"
-        tools:layout_editor_absoluteX="147dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_qs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
