@@ -83,7 +83,7 @@ sẽ cho người dùng chơi lại ở cùng cấp độ và lĩnh vực. Nút 
     </ScrollView>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
