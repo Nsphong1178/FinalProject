@@ -28,6 +28,20 @@
             android:exported="true">
 
         </activity>
+        <activity
+
+            android:name=".Answer"
+
+            android:exported="true">
+
+        </activity>
+        <activity
+
+            android:name=".ListQuestion"
+
+            android:exported="true">
+
+        </activity>
     </application>
 
 </manifest>

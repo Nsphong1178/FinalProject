@@ -1,8 +1,13 @@
 package com.example.finalproject;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,10 +18,20 @@ public class chooseCategory  extends AppCompatActivity {
     categoryAdapter CategoryListAdapter;
     ListView ListViewCategory;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame2);
+
+        Button viewListqs = findViewById(R.id.viewlistqs);
+        viewListqs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(chooseCategory.this, ListQuestion.class);
+                startActivity(intent);
+            }
+        });
 
         listCategory = new ArrayList<>();
         listCategory.add(new category(1, "Lịch sử", "Câu hỏi về lịch sử", R.drawable.lichsu));
@@ -30,9 +45,16 @@ public class chooseCategory  extends AppCompatActivity {
 
         CategoryListAdapter = new categoryAdapter(listCategory);
 
-        ListViewCategory =findViewById(R.id.list_qs);
+        ListViewCategory = findViewById(R.id.list_qs);
         ListViewCategory.setAdapter(CategoryListAdapter);
 
-
+        ListViewCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                category Category = (category) CategoryListAdapter.getItem(position);
+                Intent intent = new Intent(chooseCategory.this, Answer.class);
+                startActivity(intent);
+            }
+        });
     }
 }
