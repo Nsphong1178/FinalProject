@@ -33,7 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/texttitle" />
 
     <Button
-        android:id="@+id/buttonFinish"
+        android:id="@+id/buttonRetry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
@@ -41,21 +41,21 @@
         android:text="Chơi lại"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.947"
+        app:layout_constraintStart_toEndOf="@+id/buttonFinish"
         app:layout_constraintTop_toBottomOf="@+id/texttitle"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/buttonRetry"
+        android:id="@+id/buttonFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="380dp"
+        android:layout_marginStart="32dp"
         android:text="Hoàn thành"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonFinish"
-        app:layout_constraintHorizontal_bias="0.582"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/texttitle"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.349" />
 
     <Button
         android:id="@+id/button4"

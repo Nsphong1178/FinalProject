@@ -1,35 +1,33 @@
 package com.example.finalproject;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static String DB_PATH = "D:\\questions.db"; // Đường dẫn đến thư mục databases trong ứng dụng của bạn
-    private static String DB_NAME = "questions.db"; // Tên của file cơ sở dữ liệu của bạn
-    private SQLiteDatabase myDatabase;
+    private static final String DB_NAME = "questions.db";
+    private static final int DB_VERSION = 1;
     private final Context myContext;
 
     public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, 1);
+        super(context, DB_NAME, null, DB_VERSION);
         this.myContext = context;
-        DB_PATH = myContext.getDatabasePath(DB_NAME).getPath();
     }
 
     public void createDatabase() throws IOException {
         boolean dbExist = checkDatabase();
         if (!dbExist) {
-            this.getReadableDatabase();
+            getReadableDatabase();
             try {
                 copyDatabase();
             } catch (IOException e) {
+                Log.e("DatabaseHelper", "Error copying database");
                 throw new Error("Error copying database");
             }
         }
@@ -38,9 +36,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private boolean checkDatabase() {
         SQLiteDatabase checkDB = null;
         try {
-            checkDB = SQLiteDatabase.openDatabase(DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
+            String dbPath = myContext.getDatabasePath(DB_NAME).getPath();
+            checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
         } catch (SQLiteException e) {
-            // Database chưa tồn tại
+            // Cơ sở dữ liệu chưa tồn tại
         }
         if (checkDB != null) {
             checkDB.close();
@@ -50,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void copyDatabase() throws IOException {
         InputStream myInput = myContext.getAssets().open(DB_NAME);
-        String outFileName = DB_PATH;
+        String outFileName = myContext.getDatabasePath(DB_NAME).getPath();
         OutputStream myOutput = new FileOutputStream(outFileName);
         byte[] buffer = new byte[1024];
         int length;
@@ -62,40 +61,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         myInput.close();
     }
 
-    public void openDatabase() {
-        myDatabase = SQLiteDatabase.openDatabase(DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
+    // Phương thức để mở cơ sở dữ liệu
+    public SQLiteDatabase openDatabase() {
+        String dbPath = myContext.getDatabasePath(DB_NAME).getPath();
+        return SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
     }
 
-    public void closeDatabase() {
-        if (myDatabase != null) {
-            myDatabase.close();
+    // Phương thức để đóng cơ sở dữ liệu
+    public void closeDatabase(SQLiteDatabase database) {
+        if (database != null) {
+            database.close();
         }
-    }
-
-    public Cursor getDataFromTable() {
-        Cursor cursor = null;
-        try {
-            openDatabase();
-            cursor = myDatabase.rawQuery("SELECT * FROM your_table_name", null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cursor;
     }
 
     @Override
     public synchronized void close() {
-        if (myDatabase != null) {
-            myDatabase.close();
-        }
         super.close();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Không cần thiết vì chúng ta đã sao chép cơ sở dữ liệu từ assets
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Không cần thiết vì chúng ta không sử dụng để nâng cấp cơ sở dữ liệu
     }
 }
