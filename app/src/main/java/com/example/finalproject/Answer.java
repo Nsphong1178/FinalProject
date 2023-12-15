@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -31,13 +32,15 @@ public class Answer extends AppCompatActivity {
         String dbName = "questions.db"; // Tên thực của file cơ sở dữ liệu
         database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
 
-        Cursor resultSet = database.rawQuery("SELECT * FROM questions", null);
+        Cursor resultSet = database.rawQuery("SELECT * FROM questions ORDER BY RANDOM() LIMIT 1", null);
         int contentColumnIndex = resultSet.getColumnIndex("name");
         int answerAColumnIndex = resultSet.getColumnIndex("AnswerA");
         int answerBColumnIndex = resultSet.getColumnIndex("AnswerB");
         int answerCColumnIndex = resultSet.getColumnIndex("AnswerC");
         int answerDColumnIndex = resultSet.getColumnIndex("AnswerD");
         int answerRightColumnIndex = resultSet.getColumnIndex("rightCorrect");
+
+
 
         if (resultSet != null && resultSet.moveToFirst()) {
 
@@ -58,6 +61,10 @@ public class Answer extends AppCompatActivity {
             if (answerDColumnIndex != -1) {
                 answerD.setText(resultSet.getString(answerDColumnIndex));
             }
+//            if (answerRightColumnIndex != -1) {
+//                rightCorrectValue = resultSet.getInt(answerRightColumnIndex);
+//            }
+
         }
         answerA.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,15 +74,23 @@ public class Answer extends AppCompatActivity {
                     answerButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            if(resultSet.getString(answerRightColumnIndex).equals("1")){
-                                Intent intent = new Intent(Answer.this, DisplayResult.class);
-                                startActivity(intent);
-//                            }
+                            if (resultSet != null && resultSet.moveToFirst()) {
+                                int rightCorrectValue = resultSet.getInt(2);
+                                if(rightCorrectValue == 1){
+                                    Intent intent = new Intent(Answer.this, Answer.class);
+                                    startActivity(intent);
+                                }
+                                else{
+                                    Intent intent = new Intent(Answer.this, DisplayResult.class);
+                                    startActivity(intent);
+                                }
+                            }
                         }
                     });
                 }
             }
         });
+
 
         if (resultSet != null) {
             resultSet.close(); // Đóng Cursor sau khi sử dụng
