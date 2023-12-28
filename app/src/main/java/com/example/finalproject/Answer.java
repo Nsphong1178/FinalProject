@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -15,6 +14,9 @@ import com.example.finalproject.R;
 
 public class Answer extends AppCompatActivity {
     private SQLiteDatabase database;
+    private int totalScore = 0; // Track total score
+
+    private int level = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,81 +30,85 @@ public class Answer extends AppCompatActivity {
         RadioButton answerD = findViewById(R.id.radioButtonD);
         Button answerButton = findViewById(R.id.AnswerButton);
 
-        // Mở cơ sở dữ liệu
-        String dbName = "questions.db"; // Tên thực của file cơ sở dữ liệu
+        // Open the database
+        String dbName = "questions.db";
         database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
 
         Cursor resultSet = database.rawQuery("SELECT * FROM questions ORDER BY RANDOM() LIMIT 1", null);
-        int contentColumnIndex = resultSet.getColumnIndex("name");
-        int answerAColumnIndex = resultSet.getColumnIndex("AnswerA");
-        int answerBColumnIndex = resultSet.getColumnIndex("AnswerB");
-        int answerCColumnIndex = resultSet.getColumnIndex("AnswerC");
-        int answerDColumnIndex = resultSet.getColumnIndex("AnswerD");
-        int answerRightColumnIndex = resultSet.getColumnIndex("rightCorrect");
-
-
 
         if (resultSet != null && resultSet.moveToFirst()) {
+            // Fetching question and answers
+            String question = getColumnValue(resultSet, "name");
+            String optionA = getColumnValue(resultSet, "AnswerA");
+            String optionB = getColumnValue(resultSet, "AnswerB");
+            String optionC = getColumnValue(resultSet, "AnswerC");
+            String optionD = getColumnValue(resultSet, "AnswerD");
+            int correctAnswerIndex = getColumnInt(resultSet, "rightCorrect");
 
+            if (!question.isEmpty()) {
+                // Display question and answers
+                content.setText(question);
+                answerA.setText(optionA);
+                answerB.setText(optionB);
+                answerC.setText(optionC);
+                answerD.setText(optionD);
 
-            // Kiểm tra và hiển thị dữ liệu lên giao diện
-            if (contentColumnIndex != -1) {
-                content.setText(resultSet.getString(contentColumnIndex));
-            }
-            if (answerAColumnIndex != -1) {
-                answerA.setText(resultSet.getString(answerAColumnIndex));
-            }
-            if (answerBColumnIndex != -1) {
-                answerB.setText(resultSet.getString(answerBColumnIndex));
-            }
-            if (answerCColumnIndex != -1) {
-                answerC.setText(resultSet.getString(answerCColumnIndex));
-            }
-            if (answerDColumnIndex != -1) {
-                answerD.setText(resultSet.getString(answerDColumnIndex));
-            }
-//            if (answerRightColumnIndex != -1) {
-//                rightCorrectValue = resultSet.getInt(answerRightColumnIndex);
-//            }
+                int finalCorrectAnswerIndex = correctAnswerIndex; // Store it as final for usage in listeners
 
-        }
-        answerA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Xử lý sự kiện khi RadioButton được nhấn
-                if (((RadioButton) v).isChecked()) {
-                    answerButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (resultSet != null && resultSet.moveToFirst()) {
-                                int rightCorrectValue = resultSet.getInt(2);
-                                if(rightCorrectValue == 1){
-                                    Intent intent = new Intent(Answer.this, Answer.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Intent intent = new Intent(Answer.this, DisplayResult.class);
-                                    startActivity(intent);
-                                }
-                            }
+                answerButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Check which answer was selected
+                        int selectedAnswerIndex = getSelectedAnswerIndex(answerA, answerB, answerC, answerD);
+
+                        if (selectedAnswerIndex == finalCorrectAnswerIndex) {
+                            // Correct answer selected
+                            totalScore++; // Increment score for correct answer
+                            Intent intent = new Intent(Answer.this, Answer.class);
+                            startActivity(intent);
+                        } else {
+                            // Incorrect answer selected
+                            Intent intent = new Intent(Answer.this, DisplayResult.class);
+                            intent.putExtra("score", totalScore); // Send total score to DisplayResult activity
+                            startActivity(intent);
                         }
-                    });
-                }
+                    }
+                });
             }
-        });
-
+        }
 
         if (resultSet != null) {
-            resultSet.close(); // Đóng Cursor sau khi sử dụng
+            resultSet.close();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Đóng cơ sở dữ liệu khi Activity bị hủy
         if (database != null) {
             database.close();
         }
+    }
+
+    // Helper method to safely get String column value
+    private String getColumnValue(Cursor cursor, String columnName) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        return columnIndex != -1 ? cursor.getString(columnIndex) : "";
+    }
+
+    // Helper method to safely get int column value
+    private int getColumnInt(Cursor cursor, String columnName) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        return columnIndex != -1 ? cursor.getInt(columnIndex) : -1;
+    }
+
+    // Helper method to get the index of the selected answer
+    private int getSelectedAnswerIndex(RadioButton... radioButtons) {
+        for (int i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].isChecked()) {
+                return i + 1; // RadioButton indexes start from 1 in your database
+            }
+        }
+        return -1; // No answer selected
     }
 }

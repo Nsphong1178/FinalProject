@@ -1,73 +1,79 @@
 //package com.example.finalproject;
 //
-//import android.content.ContentValues;
-//import android.content.Context;
+//import android.content.Intent;
 //import android.database.Cursor;
-//import android.database.SQLException;
 //import android.database.sqlite.SQLiteDatabase;
-//import android.util.Log;
-//
-//import com.example.finalproject.ClassQuestion;
-//import com.example.finalproject.SQLHelper;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class QuestionDataSource {
+//import android.os.Bundle;
+//import android.view.View;
+//import android.widget.Button;
+//import android.widget.RadioButton;
+//import android.widget.TextView;
+//import androidx.appcompat.app.AppCompatActivity;public class Answer extends AppCompatActivity {
 //    private SQLiteDatabase database;
-//    private SQLHelper dbHelper;
-//    private String[] allColumns = {
-//            SQLHelper.COLUMN_ID,
-//            SQLHelper.COLUMN_NAME,
-//            SQLHelper.COLUMN_RIGHT_CORRECT,
-//            SQLHelper.COLUMN_ANSWER_A,
-//            SQLHelper.COLUMN_ANSWER_B,
-//            SQLHelper.COLUMN_ANSWER_C,
-//            SQLHelper.COLUMN_ANSWER_D
-//    };
+//    private int totalScore = 0;
+//    private int finalCorrectAnswerIndex = -1;
 //
-//    public QuestionDataSource(Context context) {
-//        dbHelper = new SQLHelper(context);
-//        database = dbHelper.getWritableDatabase(); ;
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_answer);
+//
+//        // Ánh xạ các thành phần giao diện ở đây
+//
+//        // Mở cơ sở dữ liệu
+//        String dbName = "questions.db";
+//        database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
+//
+//        loadNextQuestion(); // Load câu hỏi đầu tiên
+//
+//        Button answerButton = findViewById(R.id.AnswerButton);
+//        answerButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int selectedAnswerIndex = getSelectedAnswerIndex(answerA, answerB, answerC, answerD);
+//                if (selectedAnswerIndex == finalCorrectAnswerIndex) {
+//                    totalScore++;
+//                }
+//                loadNextQuestion(); // Chuyển sang câu hỏi tiếp theo sau khi trả lời
+//            }
+//        });
 //    }
 //
-//    public void open() throws SQLException {
-//        database = dbHelper.getWritableDatabase();
-//    }
+//    private void loadNextQuestion() {
+//        Cursor resultSet = database.rawQuery("SELECT * FROM questions ORDER BY RANDOM() LIMIT 1", null);
 //
-//    public void close() {
-//        dbHelper.close();
-//    }
+//        if (resultSet != null && resultSet.moveToFirst()) {
+//            String question = getColumnValue(resultSet, "name");
+//            String optionA = getColumnValue(resultSet, "AnswerA");
+//            String optionB = getColumnValue(resultSet, "AnswerB");
+//            String optionC = getColumnValue(resultSet, "AnswerC");
+//            String optionD = getColumnValue(resultSet, "AnswerD");
+//            int correctAnswerIndex = getColumnInt(resultSet, "rightCorrect");
 //
-//    public Cursor rawQuery(String query, String[] args) {
-//        // Thực hiện truy vấn SQL bằng phương thức rawQuery của SQLiteDatabase
-//        return database.rawQuery(query, args);
-//    }
-//    public List<ClassQuestion> getAllQuestions() {
-//        List<ClassQuestion> questions = new ArrayList<>();
+//            // Hiển thị câu hỏi và các lựa chọn mới lên giao diện
 //
-//        Cursor cursor = database.query(SQLHelper.TABLE_QUESTIONS,
-//                allColumns, null, null, null, null, null);
-//
-//        cursor.moveToFirst();
-//        while (!cursor.isAfterLast()) {
-//            ClassQuestion question = cursorToQuestion(cursor);
-//            questions.add(question);
-//            cursor.moveToNext();
+//            // Cập nhật giá trị cuối cùng để so sánh trong các bước tiếp theo
+//            finalCorrectAnswerIndex = correctAnswerIndex;
+//        } else {
+//            // Không còn câu hỏi mới
+//            Intent intent = new Intent(Answer.this, DisplayResult.class);
+//            intent.putExtra("score", totalScore);
+//            startActivity(intent);
+//            finish(); // Kết thúc activity Answer sau khi hiển thị kết quả
 //        }
-//        cursor.close();
-//        return questions;
+//
+//        if (resultSet != null) {
+//            resultSet.close();
+//        }
 //    }
 //
-//    private ClassQuestion cursorToQuestion(Cursor cursor) {
-//        ClassQuestion question = new ClassQuestion();
-//        question.setId(cursor.getLong(0));
-//        question.setName(cursor.getString(1));
-//        question.setRightCorrect(cursor.getInt(2));
-//        question.setAnswerA(cursor.getString(3));
-//        question.setAnswerB(cursor.getString(4));
-//        question.setAnswerC(cursor.getString(5));
-//        question.setAnswerD(cursor.getString(6));
-//        return question;
+//    // Các phương thức helper để lấy giá trị từ Cursor
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (database != null) {
+//            database.close();
+//        }
 //    }
 //}
