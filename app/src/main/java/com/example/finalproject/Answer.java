@@ -10,77 +10,83 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.finalproject.R;
-
 public class Answer extends AppCompatActivity {
     private SQLiteDatabase database;
-    private int totalScore = 0; // Track total score
+    private int totalScore = 0;
+    private int finalCorrectAnswerIndex = -1; // Define finalCorrectAnswerIndex in a broader scope
 
-    private int level = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame3);
+        Intent intent = getIntent();
+        final TextView content = findViewById(R.id.question);
+        final RadioButton answerA = findViewById(R.id.radioButtonA);
+        final RadioButton answerB = findViewById(R.id.radioButtonB);
+        final RadioButton answerC = findViewById(R.id.radioButtonC);
+        final RadioButton answerD = findViewById(R.id.radioButtonD);
+        final Button answerButton = findViewById(R.id.AnswerButton);
 
-        TextView content = findViewById(R.id.question);
-        RadioButton answerA = findViewById(R.id.radioButtonA);
-        RadioButton answerB = findViewById(R.id.radioButtonB);
-        RadioButton answerC = findViewById(R.id.radioButtonC);
-        RadioButton answerD = findViewById(R.id.radioButtonD);
-        Button answerButton = findViewById(R.id.AnswerButton);
+        SetQuestion();
 
-        // Open the database
+        answerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selectedAnswerIndex = getSelectedAnswerIndex(answerA, answerB, answerC, answerD);
+
+                if (selectedAnswerIndex == finalCorrectAnswerIndex) {
+                    totalScore++;
+                    SetQuestion();
+                } else {
+                    Intent intent = new Intent(Answer.this, DisplayResult.class);
+                    intent.putExtra("score", totalScore);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    private void SetQuestion() {
         String dbName = "questions.db";
         database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
 
-        Cursor resultSet = database.rawQuery("SELECT * FROM questions ORDER BY RANDOM() LIMIT 1", null);
+        Intent intent = getIntent();
+        int type = intent.getIntExtra("type_qs", 0);
+        int level = intent.getIntExtra("level_qs", 0);
+
+        Cursor resultSet = database.rawQuery(
+                "SELECT name, AnswerA, AnswerB, AnswerC, AnswerD, rightCorrect " +
+                        "FROM questions WHERE type = ? AND level = ? ORDER BY RANDOM() LIMIT 1",
+                new String[]{String.valueOf(type), String.valueOf(level)}
+        );
 
         if (resultSet != null && resultSet.moveToFirst()) {
-            // Fetching question and answers
             String question = getColumnValue(resultSet, "name");
             String optionA = getColumnValue(resultSet, "AnswerA");
             String optionB = getColumnValue(resultSet, "AnswerB");
             String optionC = getColumnValue(resultSet, "AnswerC");
             String optionD = getColumnValue(resultSet, "AnswerD");
-            int correctAnswerIndex = getColumnInt(resultSet, "rightCorrect");
+            finalCorrectAnswerIndex = getColumnInt(resultSet, "rightCorrect");
 
-            if (!question.isEmpty()) {
-                // Display question and answers
-                content.setText(question);
-                answerA.setText(optionA);
-                answerB.setText(optionB);
-                answerC.setText(optionC);
-                answerD.setText(optionD);
+            TextView content = findViewById(R.id.question);
+            RadioButton answerA = findViewById(R.id.radioButtonA);
+            RadioButton answerB = findViewById(R.id.radioButtonB);
+            RadioButton answerC = findViewById(R.id.radioButtonC);
+            RadioButton answerD = findViewById(R.id.radioButtonD);
 
-                int finalCorrectAnswerIndex = correctAnswerIndex; // Store it as final for usage in listeners
-
-                answerButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Check which answer was selected
-                        int selectedAnswerIndex = getSelectedAnswerIndex(answerA, answerB, answerC, answerD);
-
-                        if (selectedAnswerIndex == finalCorrectAnswerIndex) {
-                            // Correct answer selected
-                            totalScore++; // Increment score for correct answer
-                            Intent intent = new Intent(Answer.this, Answer.class);
-                            startActivity(intent);
-                        } else {
-                            // Incorrect answer selected
-                            Intent intent = new Intent(Answer.this, DisplayResult.class);
-                            intent.putExtra("score", totalScore); // Send total score to DisplayResult activity
-                            startActivity(intent);
-                        }
-                    }
-                });
-            }
+            content.setText(question);
+            answerA.setText(optionA);
+            answerB.setText(optionB);
+            answerC.setText(optionC);
+            answerD.setText(optionD);
         }
 
         if (resultSet != null) {
             resultSet.close();
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -90,25 +96,22 @@ public class Answer extends AppCompatActivity {
         }
     }
 
-    // Helper method to safely get String column value
     private String getColumnValue(Cursor cursor, String columnName) {
         int columnIndex = cursor.getColumnIndex(columnName);
         return columnIndex != -1 ? cursor.getString(columnIndex) : "";
     }
 
-    // Helper method to safely get int column value
     private int getColumnInt(Cursor cursor, String columnName) {
         int columnIndex = cursor.getColumnIndex(columnName);
         return columnIndex != -1 ? cursor.getInt(columnIndex) : -1;
     }
 
-    // Helper method to get the index of the selected answer
     private int getSelectedAnswerIndex(RadioButton... radioButtons) {
         for (int i = 0; i < radioButtons.length; i++) {
             if (radioButtons[i].isChecked()) {
-                return i + 1; // RadioButton indexes start from 1 in your database
+                return i + 1;
             }
         }
-        return -1; // No answer selected
+        return -1;
     }
 }
