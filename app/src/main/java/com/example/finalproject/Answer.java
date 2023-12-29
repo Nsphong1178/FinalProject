@@ -14,13 +14,20 @@ public class Answer extends AppCompatActivity {
     private SQLiteDatabase database;
     private int totalScore = 0;
     private int finalCorrectAnswerIndex = -1; // Define finalCorrectAnswerIndex in a broader scope
+    private DatabaseInitializer databaseInitializer; // Thêm biến DatabaseInitializer
 
-
+    QuestionAdapter QuestionListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame3);
+        databaseInitializer = new DatabaseInitializer(); // Khởi tạo DatabaseInitializer
+
+        databaseInitializer.copyDatabaseFromAssets(this); // Gọi phương thức copyDatabaseFromAssets
+
         Intent intent = getIntent();
+        int levelID = intent.getIntExtra("type_qs", 0);
+        int level = intent.getIntExtra("level_qs", 0);
         final TextView content = findViewById(R.id.question);
         final RadioButton answerA = findViewById(R.id.radioButtonA);
         final RadioButton answerB = findViewById(R.id.radioButtonB);
@@ -36,11 +43,18 @@ public class Answer extends AppCompatActivity {
                 int selectedAnswerIndex = getSelectedAnswerIndex(answerA, answerB, answerC, answerD);
 
                 if (selectedAnswerIndex == finalCorrectAnswerIndex) {
-                    totalScore++;
+                    if(level == 1){
+                        totalScore++;
+                    }
+                    else{
+                        totalScore = totalScore+ 2;
+                    }
                     SetQuestion();
                 } else {
                     Intent intent = new Intent(Answer.this, DisplayResult.class);
                     intent.putExtra("score", totalScore);
+                    intent.putExtra("type_qs", levelID);
+                    intent.putExtra("level_qs", level);
                     startActivity(intent);
                 }
             }
@@ -52,13 +66,13 @@ public class Answer extends AppCompatActivity {
         database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
 
         Intent intent = getIntent();
-        int type = intent.getIntExtra("type_qs", 0);
+        int levelID = intent.getIntExtra("type_qs", 0);
         int level = intent.getIntExtra("level_qs", 0);
 
         Cursor resultSet = database.rawQuery(
                 "SELECT name, AnswerA, AnswerB, AnswerC, AnswerD, rightCorrect " +
-                        "FROM questions WHERE type = ? AND level = ? ORDER BY RANDOM() LIMIT 1",
-                new String[]{String.valueOf(type), String.valueOf(level)}
+                        "FROM questions WHERE level = ? AND levelID = ? ORDER BY RANDOM() LIMIT 1",
+                new String[]{String.valueOf(level), String.valueOf(levelID)}
         );
 
         if (resultSet != null && resultSet.moveToFirst()) {

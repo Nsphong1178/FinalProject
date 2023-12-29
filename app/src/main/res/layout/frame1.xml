@@ -51,33 +51,26 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trong trò chơi này, bạn trả lời các câu hỏi theo các chủ đề:Lịch sử, Địa lý, Khoa học, Nghệ thuật,..." />
+                android:text="Trong trò chơi này, bạn trả lời các câu hỏi theo các chủ đề: Lịch sử, Địa lý, Khoa học, Nghệ thuật,..." />
 
             <TextView
                 android:id="@+id/text3"
                 android:textSize="18dp"
-                android:textStyle="bold"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Khi mở ứng dụng, người dùng sẽ được đưa tới màn hình số 1.
+                android:text="Đây là một trò chơi giáo dục thú vị và hấp dẫn, nơi người chơi có cơ hội kiểm tra kiến ​​thức của mình trong nhiều lĩnh vực khác nhau. Trò chơi này đưa ra các câu hỏi với nhiều chủ đề khác nhau như Lịch sử, Địa lý, Khoa học, Thể thao, Công nghệ và nhiều lĩnh vực khác.
 
-Màn hình số 1: Đây là màn hình chào mừng, màn hình này hiển thị giới thiệu ứng dụng và trò chơi (chú ý: Hãy làm cho phần giới thiệu này đài để có thể cuộn (scroll) được. Màn hình này có một nút Start, khi nhấn nút này, người dùng sẽ được chuyển sang màn hình số 2
+Người chơi sẽ phải chọn đáp án đúng từ các lựa chọn có sẵn, và mỗi câu hỏi đều được gắn liền với một chủ đề và mức độ khó khăn khác nhau, từ cơ bản đến nâng cao. Trò chơi không chỉ giúp người chơi kiểm tra kiến thức mà còn cung cấp cơ hội học hỏi và mở rộng hiểu biết.
 
-- Màn hình số 2: Màn hình này hiển thị các chủ đề để người dùng chơi. Các chủ đề bao gồm: Địa lý, Lịch sử, Khoa học, Nghệ thuật,... (Có thể thêm
+Với việc thử thách kiến thức và sự tự tin của người chơi, trò chơi câu hỏi mang đến một môi trường giáo dục và giải trí tuyệt vời. Người chơi có thể tham gia một cách tích cực, khám phá kiến thức mới và tận hưởng những phút giây thú vị cùng bạn bè hoặc trong các cuộc thi trực tuyến. Trò chơi này sẽ là điểm đến lý tưởng cho những người yêu thích học hỏi và đam mê trí tuệ!
+GoQuiz không chỉ đơn thuần là một trò chơi giải trí thông thường mà còn là một công cụ học tập tuyệt vời. Với sự đa dạng về chủ đề, từ lịch sử đến khoa học, từ địa lý đến công nghệ, trò chơi này khám phá và thách thức khả năng kiến thức của người chơi một cách sâu rộng.
 
-các chủ đề khác nếu muốn). Sử dụng ListView hoặc RecycleView cho phần này. Mỗi phần lựa chọn chủ đề bao gồm một hình ảnh minh họa, tên chủ đề và mô tả cho cho chủ đề đó. Phía trên có mục Total Score hiển thị tổng điểm đạt điểm đạt được sau các làn chơi của người chơi. Phía dưới màn hình có một thanh gạt để lựa chọn cấp độ chơi: Đề Khó. Nếu người chơi chọn cấp độ khó, với mỗi câu trả lời đúng, người chơi sẽ được 2 điểm còn với cấp độ để thì chỉ được 1 điểm. Dưới cùng là một nút truy cập vào danh sách tất cả các câu hỏi, khi nhân nút này, người dùng được đưa đến màn
+Mỗi câu hỏi không chỉ giúp người chơi kiểm tra kiến thức mà còn tạo cơ hội cho họ để tìm hiểu thêm về các lĩnh vực khác nhau. Từ những câu hỏi cơ bản đến nâng cao, trò chơi này thúc đẩy sự tò mò và khám phá kiến thức mới.
 
-hình số 5.
+Có thể chơi trò chơi này một mình để thử thách bản thân hoặc cùng với bạn bè và gia đình để tạo ra những trận đấu hấp dẫn. Điều này không chỉ nâng cao kiến thức mà còn tạo ra không khí vui vẻ và giao lưu.
 
-Màn hình số 3: Màn hình chơi, ở màn hình này sẽ hiển thị câu hỏi và 4 đáp án trả lời dưới dạng Radio Button và một nút Trả lời. Khi người dùng nhân nút Trả lời, nêu người dùng trả lời đúng, câu hỏi khác sẽ được hiện ra. Nếu người dùng trả lời sai hoặc hết cầu hỏi, người dùng sẽ được đưa
-
-đến màn hình số 4. - Màn hình số 4: Màn hình hiển thị số điểm của người chơi trong làn chơi đó, một nút Hoàn thành sẽ đưa người chơi về màn hình số 1. Nút Chơi lại
-
-sẽ cho người dùng chơi lại ở cùng cấp độ và lĩnh vực. Nút Chia sẻ thành tích cho phép người dùng chia sẽ số điểm trong làn chơi đó qua các ứng dụng khác (tin nhân).
-
-- Màn hình số 5: Hiển thị danh sách tất cả các câu hỏi và một menu để lọc các câu hỏi theo từng chủ đề. Khi chọn bất kỳ một câu hỏi nào, người dùng sẽ được đưa tới màn hình số 56.
-
-- Màn hình số 6: Màn hình hiển thị câu hỏi, các câu trả lời, đáp án đúng và độ khó" />
+Với việc kết hợp giữa giải trí và học hỏi, trò chơi câu hỏi là một nguồn thông tin hữu ích và một cách thú vị để mở rộng tầm hiểu biết. Đồng thời, nó cũng khuyến khích sự nghiên cứu, tư duy logic và kỹ năng giải quyết vấn đề của người chơi." />
 
         </LinearLayout>
     </ScrollView>

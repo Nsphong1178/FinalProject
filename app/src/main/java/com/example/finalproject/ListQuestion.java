@@ -24,7 +24,7 @@ public class ListQuestion extends AppCompatActivity {
     private SQLiteDatabase database;
     private ArrayAdapter<String> adapter;
     private ArrayAdapter<String> idTypeAdapter; // Adapter cho danh sách id_type
-
+    private QuestionAdapter ListQuestionAdapter;
     private SearchView searchView;
     private PopupWindow popupWindow;
     private ListView suggestionListView;
@@ -33,14 +33,18 @@ public class ListQuestion extends AppCompatActivity {
 
     private List<String> displayedQuestionList; // Danh sách câu hỏi hiển thị
 
+    private DatabaseInitializer databaseInitializer; // Thêm biến DatabaseInitializer
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame5);
+        databaseInitializer = new DatabaseInitializer(); // Khởi tạo DatabaseInitializer
 
-        ListView listView = findViewById(R.id.listView_qs);
-//        List<String> allQuestions = getAllQuestionsFromDatabase();
-//        List<String> allQuestions = getQuestionsByType("Lịch sử");
+        databaseInitializer.copyDatabaseFromAssets(this); // Gọi phương thức copyDatabaseFromAssets
+
+
+
         AllQuestion();
         searchView = findViewById(R.id.searchView);
 
@@ -80,22 +84,11 @@ public class ListQuestion extends AppCompatActivity {
             dismissSuggestionPopup();
             filterQuestionListByType(selectedItem);
 
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                category Category = (category) suggestionAdapter.getItem(position);
-//                Intent intent = new Intent(chooseCategory.this, Answer.class);
-//                startActivity(intent);
-//            }
         });
 
-//        ListViewCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                category Category = (category) CategoryListAdapter.getItem(position);
-//                Intent intent = new Intent(chooseCategory.this, Answer.class);
-//                startActivity(intent);
-//            }
-//        });
+
+
+
     }
     private void filterQuestionListByType(String selectedIdType) {
         displayedQuestionList = getQuestionsByType(selectedIdType);
@@ -105,14 +98,16 @@ public class ListQuestion extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
+
     private void AllQuestion() {
         displayedQuestionList = getAllQuestionsFromDatabase();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedQuestionList);
         ListView listView = findViewById(R.id.listView_qs);
         listView.setAdapter(adapter);
-    }
 
+
+    }
 
 
     private List<String> getAllQuestionsFromDatabase() {
@@ -169,4 +164,6 @@ public class ListQuestion extends AppCompatActivity {
             popupWindow.dismiss();
         }
     }
+
+
 }

@@ -1,6 +1,12 @@
 package com.example.finalproject;
 
+import static java.lang.reflect.Array.getInt;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
@@ -9,7 +15,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,12 +26,37 @@ public class chooseCategory  extends AppCompatActivity {
     categoryAdapter CategoryListAdapter;
     ListView ListViewCategory;
 
-    private int level = 1;
+    private SQLiteDatabase database;
+    private DatabaseInitializer databaseInitializer; // Thêm biến DatabaseInitializer
 
+    private int score  = 10;
+    private int level = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame2);
+
+        try {
+            DatabaseInitializer databaseInitializer = new DatabaseInitializer();
+            databaseInitializer.copyDatabaseFromAssets(this);
+
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath("questions.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
+            Cursor cursor = db.rawQuery("SELECT score FROM score", null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                score = cursor.getInt(0);
+                cursor.close(); // Close the cursor when done
+            }
+
+            TextView totalScore = findViewById(R.id.textView2);
+            totalScore.setText(String.valueOf(score));
+
+            db.close(); // Close the database connection when done
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle any exceptions (e.g., database not found, table doesn't exist, etc.)
+        }
+
 
         Switch SwLevel = findViewById(R.id.switch1);
         Button viewListqs = findViewById(R.id.viewlistqs);
@@ -55,11 +86,11 @@ public class chooseCategory  extends AppCompatActivity {
         listCategory.add(new category(0, "Lịch sử", "Câu hỏi về lịch sử", R.drawable.lichsu));
         listCategory.add(new category(1, "Thể thao", "Câu hỏi về thể thao", R.drawable.thethao));
         listCategory.add(new category(2, "Địa lý", "Câu hỏi về lịch sử", R.drawable.dialy));
-        listCategory.add(new category(3, "Công nghệ", "Câu hỏi về thể thao", R.drawable.thethao));
-        listCategory.add(new category(4, "Khoa học", "Câu hỏi về lịch sử", R.drawable.toanhoc));
-        listCategory.add(new category(5, "Toán học", "Câu hỏi về thể thao", R.drawable.nghethuat));
-        listCategory.add(new category(6, "Nghệ thuật", "Câu hỏi về lịch sử", R.drawable.vanhoc));
-        listCategory.add(new category(7, "Văn học", "Câu hỏi về thể thao", R.drawable.congnghe));
+        listCategory.add(new category(3, "Công nghệ", "Câu hỏi về thể thao", R.drawable.congnghe));
+        listCategory.add(new category(4, "Khoa học", "Câu hỏi về lịch sử", R.drawable.khoahoc));
+        listCategory.add(new category(5, "Toán học", "Câu hỏi về thể thao", R.drawable.toanhoc));
+        listCategory.add(new category(6, "Nghệ thuật", "Câu hỏi về lịch sử", R.drawable.nghethuat));
+        listCategory.add(new category(7, "Văn học", "Câu hỏi về thể thao", R.drawable.vanhoc));
 
         CategoryListAdapter = new categoryAdapter(listCategory);
 
