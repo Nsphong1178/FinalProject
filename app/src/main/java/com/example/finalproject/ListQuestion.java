@@ -1,33 +1,25 @@
 package com.example.finalproject;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class ListQuestion extends AppCompatActivity {
-    private SQLiteDatabase database;
     private ArrayAdapter<String> adapter;
-    private ArrayAdapter<String> idTypeAdapter; // Adapter cho danh sách id_type
-    private QuestionAdapter ListQuestionAdapter;
-    private SearchView searchView;
-    private PopupWindow popupWindow;
-    private ListView suggestionListView;
     private ArrayAdapter<String> suggestionAdapter;
     private ArrayList<String> suggestionList;
 
@@ -43,14 +35,12 @@ public class ListQuestion extends AppCompatActivity {
 
         databaseInitializer.copyDatabaseFromAssets(this); // Gọi phương thức copyDatabaseFromAssets
 
-
-
         AllQuestion();
-        searchView = findViewById(R.id.searchView);
+        SearchView searchView = findViewById(R.id.searchView);
 
         View popupView = getLayoutInflater().inflate(R.layout.popup_layout, null);
-        popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        suggestionListView = popupView.findViewById(R.id.suggestionListView);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ListView suggestionListView = popupView.findViewById(R.id.suggestionListView);
 
         suggestionList = new ArrayList<>();
         try {
@@ -71,51 +61,83 @@ public class ListQuestion extends AppCompatActivity {
         suggestionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, suggestionList);
         suggestionListView.setAdapter(suggestionAdapter);
 
-        searchView.setOnSearchClickListener(v -> showSuggestionPopup());
+        searchView.setOnSearchClickListener(v -> showSuggestionPopup(popupWindow, searchView));
         searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
-                dismissSuggestionPopup();
+                dismissSuggestionPopup(popupWindow);
             }
         });
 
         suggestionListView.setOnItemClickListener((parent, view, position, id) -> {
             String selectedItem = suggestionList.get(position);
             searchView.setQuery(selectedItem, true);
-            dismissSuggestionPopup();
+            dismissSuggestionPopup(popupWindow);
             filterQuestionListByType(selectedItem);
+        });
 
+        ListView listView = findViewById(R.id.listView_qs);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+
+            String selectedQuestion = displayedQuestionList.get(position);
+
+            int questionId = getQuestionIdByName(selectedQuestion);
+
+            if (questionId != -1) {
+                // Chuyển sang trang chi tiết câu hỏi kèm theo ID
+                Intent intent = new Intent(ListQuestion.this, Detail.class);
+                intent.putExtra("QUESTION_ID", questionId);
+                startActivity(intent);
+            } else {
+                // Xử lý khi không tìm thấy ID của câu hỏi
+                Toast.makeText(ListQuestion.this, "no", Toast.LENGTH_SHORT).show();
+             // Log yourString với tag "YourTag"
+            }
         });
 
 
+     }
 
+    private int getQuestionIdByName(String questionName) {
+        int questionId = -1;
 
+        try {
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath("questions.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
+            Cursor cursor = db.rawQuery("SELECT * FROM questions WHERE name = ?", new String[]{questionName});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                questionId = cursor.getInt(0);
+                cursor.close();
+            }
+            db.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return questionId;
     }
+
     private void filterQuestionListByType(String selectedIdType) {
         displayedQuestionList = getQuestionsByType(selectedIdType);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedQuestionList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedQuestionList);
         ListView listView = findViewById(R.id.listView_qs);
         listView.setAdapter(adapter);
     }
-
 
     private void AllQuestion() {
         displayedQuestionList = getAllQuestionsFromDatabase();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedQuestionList);
-        ListView listView = findViewById(R.id.listView_qs);
-        listView.setAdapter(adapter);
-
-
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedQuestionList);
     }
-
 
     private List<String> getAllQuestionsFromDatabase() {
         List<String> questionList = new ArrayList<>();
         String dbName = "questions.db";
 
         try {
-            database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
+            SQLiteDatabase database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
             Cursor cursor = database.rawQuery("SELECT name FROM questions", null);
 
             if (cursor != null && cursor.moveToFirst()) {
@@ -132,6 +154,7 @@ public class ListQuestion extends AppCompatActivity {
 
         return questionList;
     }
+
     private List<String> getQuestionsByType(String selectedIdType) {
         List<String> filteredQuestionList = new ArrayList<>();
 
@@ -153,17 +176,16 @@ public class ListQuestion extends AppCompatActivity {
 
         return filteredQuestionList;
     }
-    private void showSuggestionPopup() {
+
+    private void showSuggestionPopup(PopupWindow popupWindow, View anchorView) {
         if (!popupWindow.isShowing()) {
-            popupWindow.showAsDropDown(searchView);
+            popupWindow.showAsDropDown(anchorView);
         }
     }
 
-    private void dismissSuggestionPopup() {
+    private void dismissSuggestionPopup(PopupWindow popupWindow) {
         if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         }
     }
-
-
 }

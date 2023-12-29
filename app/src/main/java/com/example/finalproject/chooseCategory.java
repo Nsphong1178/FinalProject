@@ -40,8 +40,8 @@ public class chooseCategory  extends AppCompatActivity {
             DatabaseInitializer databaseInitializer = new DatabaseInitializer();
             databaseInitializer.copyDatabaseFromAssets(this);
 
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath("questions.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
-            Cursor cursor = db.rawQuery("SELECT score FROM score", null);
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath("questions1.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
+            Cursor cursor = db.rawQuery("SELECT * FROM score", null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 score = cursor.getInt(0);
