@@ -7,23 +7,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Answer extends AppCompatActivity {
     private SQLiteDatabase database;
     private int totalScore = 0;
-    private int finalCorrectAnswerIndex = -1; // Define finalCorrectAnswerIndex in a broader scope
-    private DatabaseInitializer databaseInitializer; // Thêm biến DatabaseInitializer
-
+    private int finalCorrectAnswerIndex = -1;
+    private DatabaseInitializer databaseInitializer;
     QuestionAdapter QuestionListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame3);
-        databaseInitializer = new DatabaseInitializer(); // Khởi tạo DatabaseInitializer
+        databaseInitializer = new DatabaseInitializer();
 
-        databaseInitializer.copyDatabaseFromAssets(this); // Gọi phương thức copyDatabaseFromAssets
+        databaseInitializer.copyDatabaseFromAssets(this);
 
         Intent intent = getIntent();
         int levelID = intent.getIntExtra("type_qs", 0);
@@ -64,6 +64,7 @@ public class Answer extends AppCompatActivity {
     private void SetQuestion() {
         String dbName = "questions.db";
         database = SQLiteDatabase.openDatabase(getDatabasePath(dbName).getPath(), null, SQLiteDatabase.OPEN_READONLY);
+        RadioGroup radioGroup = findViewById(R.id.RGroup); // Thay R.id.radioGroup bằng ID thực của RadioGroup trong layout của bạn
 
         Intent intent = getIntent();
         int levelID = intent.getIntExtra("type_qs", 0);
@@ -99,6 +100,8 @@ public class Answer extends AppCompatActivity {
         if (resultSet != null) {
             resultSet.close();
         }
+        radioGroup.clearCheck();
+
     }
 
 

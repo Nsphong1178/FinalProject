@@ -1,5 +1,6 @@
 package com.example.finalproject;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -101,4 +102,7 @@ public class Detail extends AppCompatActivity {
         int columnIndex = cursor.getColumnIndex(columnName);
         return columnIndex != -1 ? cursor.getInt(columnIndex) : -1;
     }
+
+
+
 }

@@ -1,21 +1,17 @@
 package com.example.finalproject;
 
-import static java.lang.reflect.Array.getInt;
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,11 +33,15 @@ public class chooseCategory  extends AppCompatActivity {
         setContentView(R.layout.frame2);
 
         try {
-            DatabaseInitializer databaseInitializer = new DatabaseInitializer();
-            databaseInitializer.copyDatabaseFromAssets(this);
 
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath("questions1.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
-            Cursor cursor = db.rawQuery("SELECT * FROM score", null);
+            databaseInitializer = new DatabaseInitializer(); // Khởi tạo DatabaseInitializer
+
+            databaseInitializer.copyDatabaseFromAssetsScore(this); // Gọi phương thức copyDatabaseFromAssets
+
+
+            SQLiteDatabase data = SQLiteDatabase.openDatabase(getDatabasePath("score.db").getPath(), null, SQLiteDatabase.OPEN_READONLY);
+
+            Cursor cursor = data.rawQuery("SELECT * FROM score", null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 score = cursor.getInt(0);
@@ -50,13 +50,13 @@ public class chooseCategory  extends AppCompatActivity {
 
             TextView totalScore = findViewById(R.id.textView2);
             totalScore.setText(String.valueOf(score));
+//            Toast.makeText(chooseCategory.this, "no4", Toast.LENGTH_SHORT).show();
 
-            db.close(); // Close the database connection when done
+            data.close(); // Close the database connection when done
         } catch (Exception e) {
             e.printStackTrace();
             // Handle any exceptions (e.g., database not found, table doesn't exist, etc.)
         }
-
 
         Switch SwLevel = findViewById(R.id.switch1);
         Button viewListqs = findViewById(R.id.viewlistqs);

@@ -1,14 +1,20 @@
 package com.example.finalproject;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DisplayResult extends AppCompatActivity {
+    private DatabaseInitializer databaseInitializer;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame4);
@@ -38,6 +44,29 @@ public class DisplayResult extends AppCompatActivity {
             }
         });
 
+        try {
+            databaseInitializer = new DatabaseInitializer();
+            databaseInitializer.copyDatabaseFromAssetsScore(this);
+
+            SQLiteDatabase data = SQLiteDatabase.openDatabase(getDatabasePath("score.db").getPath(), null, SQLiteDatabase.OPEN_READWRITE);
+
+            Cursor cursor = data.rawQuery("SELECT * FROM score", null);
+            int oldScore = 0;
+
+            if (cursor != null && cursor.moveToFirst()) {
+                oldScore = cursor.getInt(0);
+                cursor.close();
+            }
+
+            ContentValues values = new ContentValues();
+            values.put("score", oldScore + totalScore);
+
+            data.update("score", values, null, null);
+
+            data.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

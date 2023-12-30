@@ -23,17 +23,17 @@ public class ListQuestion extends AppCompatActivity {
     private ArrayAdapter<String> suggestionAdapter;
     private ArrayList<String> suggestionList;
 
-    private List<String> displayedQuestionList; // Danh sách câu hỏi hiển thị
+    private List<String> displayedQuestionList;
 
-    private DatabaseInitializer databaseInitializer; // Thêm biến DatabaseInitializer
+    private DatabaseInitializer databaseInitializer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame5);
-        databaseInitializer = new DatabaseInitializer(); // Khởi tạo DatabaseInitializer
+        databaseInitializer = new DatabaseInitializer();
 
-        databaseInitializer.copyDatabaseFromAssets(this); // Gọi phương thức copyDatabaseFromAssets
+        databaseInitializer.copyDatabaseFromAssets(this);
 
         AllQuestion();
         SearchView searchView = findViewById(R.id.searchView);
@@ -80,20 +80,14 @@ public class ListQuestion extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            String selectedQuestion = displayedQuestionList.get(position);
+        String selectedQuestion = displayedQuestionList.get(position);
 
-            int questionId = getQuestionIdByName(selectedQuestion);
+        int questionId = getQuestionIdByName(selectedQuestion);
 
-            if (questionId != -1) {
-                // Chuyển sang trang chi tiết câu hỏi kèm theo ID
-                Intent intent = new Intent(ListQuestion.this, Detail.class);
-                intent.putExtra("QUESTION_ID", questionId);
-                startActivity(intent);
-            } else {
-                // Xử lý khi không tìm thấy ID của câu hỏi
-                Toast.makeText(ListQuestion.this, "no", Toast.LENGTH_SHORT).show();
-             // Log yourString với tag "YourTag"
-            }
+        Intent intent = new Intent(ListQuestion.this, Detail.class);
+        intent.putExtra("QUESTION_ID", questionId);
+        startActivity(intent);
+
         });
 
 
